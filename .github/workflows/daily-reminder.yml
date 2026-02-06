@@ -1,0 +1,28 @@
+name: Daily Event Reminder
+
+on:
+  schedule:
+    # Runs at 22:00 UTC everyday (5:00 AM Vietnam Time)
+    - cron: '0 22 * * *'
+  workflow_dispatch:
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: npm install firebase-admin
+
+      - name: Run Reminder Script
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          NEXT_PUBLIC_FIREBASE_DATABASE_URL: ${{ secrets.NEXT_PUBLIC_FIREBASE_DATABASE_URL }}
+        run: node scripts/attendance-check.js
